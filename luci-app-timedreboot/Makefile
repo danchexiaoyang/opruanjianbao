@@ -47,6 +47,15 @@ endef
 
 define Package/$(PKG_NAME)/postinst
 #!/bin/sh
+	[ -n "${IPKG_INSTROOT}" ] || {
+		chmod +x /etc/init.d/timedreboot
+		chmod +x /usr/bin/dorboot
+	}
+	exit 0
+endef
+
+define Package/$(PKG_NAME)/postinst
+#!/bin/sh
     chmod a+x ${IPKG_INSTROOT}/etc/init.d/timedreboot >/dev/null 2>&1
     chmod a+x ${IPKG_INSTROOT}/usr/bin/dorboot >/dev/null 2>&1
     exit 0
