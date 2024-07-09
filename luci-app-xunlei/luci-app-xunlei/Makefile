@@ -33,6 +33,12 @@ define Package/$(PKG_NAME)/postrm
   exit 0
 endef
 
+define Package/$(PKG_NAME)/install
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) ./files/xunlei $(1)/etc/init.d/xunlei
+    chmod +x $(1)/etc/init.d/xunlei
+endef
+
 include $(TOPDIR)/feeds/luci/luci.mk
 
 # call BuildPackage - OpenWrt buildroot signature
