@@ -8,10 +8,10 @@ function index()
 		return
 	end
 	local page
-	entry({"admin", "status", "netdata"}, alias("admin", "status", "netdata", "setting"), _("实时监控"), 10).dependent = true
+	entry({"admin", "status", "netdata"}, alias("admin", "status", "netdata", "netdata"), _("实时监控"), 10).dependent = true
 
-	entry({"admin", "status", "netdata", "setting"}, cbi("netdata/netdata"), _("基本设置"), 20).leaf = true
-	entry({"admin", "status", "netdata", "netdata"}, template("netdata"), _("实时监控"), 30).leaf = true
+	entry({"admin", "status", "netdata", "netdata"}, template("netdata"), _("实时监控"), 20).leaf = true
+	entry({"admin", "status", "netdata", "setting"}, cbi("netdata/netdata"), _("基本设置"), 30).leaf = true
 	entry({"admin", "status", "netdata_status"}, call("act_status"))
 end
 
