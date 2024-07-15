@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=luci-udptools
 PKG_VERSION:=1.0.0
 PKG_RELEASE:=1
-
+LUCI_DEPENDS:=+UDPspeeder
 include $(INCLUDE_DIR)/package.mk
 
 define Package/$(PKG_NAME)
