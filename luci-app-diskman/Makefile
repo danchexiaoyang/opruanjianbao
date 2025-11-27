@@ -54,7 +54,7 @@ endef
 
 # =====================  i18n po2lmo support  =========================
 
-PKG_BUILD_DEPENDS:=po2lmo/host
+PKG_BUILD_DEPENDS:=luci-base/host
 
 define Build/Prepare
 	$(call Build/Prepare/Default)
@@ -66,17 +66,11 @@ define Build/Compile
 	# Build all translation .lmo
 	for po in $(CURDIR)/po/*/*.po; do \
 		lang=$$(basename $$(dirname $$po)); \
-		po2lmo $$po $(PKG_BUILD_DIR)/i18n/$(LUCI_NAME).$$lang.lmo; \
+		$(STAGING_DIR_HOST)/bin/po2lmo $$po \
+			$(PKG_BUILD_DIR)/i18n/$(LUCI_NAME).$$lang.lmo; \
 	done
 endef
 
-define Package/$(PKG_NAME)/install
-	$(call Package/luci/install,$(1))
-	# Install i18n files
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/i18n/*.lmo \
-		$(1)/usr/lib/lua/luci/i18n/
-endef
 
 # ====================================================================
 
