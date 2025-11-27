@@ -4,11 +4,11 @@ PKG_NAME:=luci-app-diskman
 LUCI_NAME:=luci-app-diskman
 PKG_VERSION:=0.2.13
 PKG_RELEASE:=1
+
 PKG_MAINTAINER:=lisaac <https://github.com/lisaac/luci-app-diskman>
 PKG_LICENSE:=AGPL-3.0
 
 LUCI_TITLE:=Disk Manager interface for LuCI
-
 LUCI_DEPENDS:=+luci-compat +luci-lib-ipkg +e2fsprogs +parted +smartmontools +blkid \
 	+kmod-fs-vfat +dosfstools +kmod-fs-msdos +kmod-nls-base +kmod-nls-utf8 +kmod-nls-cp932 +kmod-nls-cp936 +kmod-nls-cp950 \
 	+kmod-fs-exfat +exfat-mkfs +exfat-fsck \
@@ -51,6 +51,34 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_kmod_md_linears
 	bool "Include kmod-md-linear"
 	default n
 endef
+
+# =====================  i18n po2lmo support  =========================
+
+PKG_BUILD_DEPENDS:=po2lmo/host
+
+define Build/Prepare
+	$(call Build/Prepare/Default)
+	mkdir -p $(PKG_BUILD_DIR)/i18n
+endef
+
+define Build/Compile
+	$(call Build/Compile/Default)
+	# Build all translation .lmo
+	for po in $(CURDIR)/po/*/*.po; do \
+		lang=$$(basename $$(dirname $$po)); \
+		po2lmo $$po $(PKG_BUILD_DIR)/i18n/$(LUCI_NAME).$$lang.lmo; \
+	done
+endef
+
+define Package/$(PKG_NAME)/install
+	$(call Package/luci/install,$(1))
+	# Install i18n files
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/i18n/*.lmo \
+		$(1)/usr/lib/lua/luci/i18n/
+endef
+
+# ====================================================================
 
 include $(TOPDIR)/feeds/luci/luci.mk
 
