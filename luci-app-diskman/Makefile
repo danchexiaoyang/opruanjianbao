@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-diskman
-LUCI_NAME:=luci-app-diskman
+# LUCI_NAME:=luci-app-diskman
 PKG_VERSION:=0.2.13
 PKG_RELEASE:=1
 PKG_MAINTAINER:=lisaac <https://github.com/lisaac/luci-app-diskman>
