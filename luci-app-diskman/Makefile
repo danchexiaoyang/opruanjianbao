@@ -9,6 +9,8 @@ PKG_LICENSE:=AGPL-3.0
 
 LUCI_TITLE:=Disk Manager interface for LuCI
 
+include $(TOPDIR)/feeds/luci/luci.mk
+
 LUCI_DEPENDS:=+luci-compat +luci-lib-ipkg +e2fsprogs +parted +smartmontools +blkid \
 	+kmod-fs-vfat +dosfstools +kmod-fs-msdos +kmod-nls-base +kmod-nls-utf8 +kmod-nls-cp932 +kmod-nls-cp936 +kmod-nls-cp950 \
 	+kmod-fs-exfat +exfat-mkfs +exfat-fsck \
@@ -52,6 +54,9 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_kmod_md_linears
 	default n
 endef
 
-include $(TOPDIR)/feeds/luci/luci.mk
+define Package/$(PKG_NAME)/install
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
+	po2lmo ./po/zh-cn/diskman.po $(1)/usr/lib/lua/luci/i18n/diskman.zh-cn.lmo
+endef
 
 # call BuildPackage - OpenWrt buildroot signature
