@@ -3,7 +3,7 @@ include $(TOPDIR)/rules.mk
 LUCI_TITLE:=luci-app-diskman
 LUCI_PKGARCH:=all
 PKG_NAME:=luci-app-diskman
-PKG_VERSION:=0.2.13
+PKG_VERSION:=1
 PKG_RELEASE:=1
 
 LUCI_DEPENDS:= \
