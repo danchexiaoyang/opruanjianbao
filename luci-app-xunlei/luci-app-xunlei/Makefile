@@ -36,9 +36,4 @@ rm -rf /var/packages/pan-xunlei-com
 exit 0
 endef
 
-define Package/$(PKG_NAME)/install
-	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/xunlei $(1)/etc/init.d/xunlei
-endef
-
 $(eval $(call BuildPackage,$(PKG_NAME)))
