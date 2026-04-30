@@ -1,17 +1,28 @@
-# Copyright (C) 2015-2016 OpenWrt.org
-#
-# This is free software, licensed under the GNU General Public License v3.
-#
-
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=nas-xunlei
 PKG_VERSION:=3.7.1
-PKG_RELEASE:=6
+PKG_RELEASE:=1
 STRIP:=false
 
 PKG_MAINTAINER:=sbwml <admin@cooluc.com>
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
+
+# 架构判断
+ifeq ($(ARCH),aarch64)
+  BIN_FILE:=aarch64-v$(PKG_VERSION).tar.xz
+  BIN_HASH:=285c5b8156f775cf25531aa88e3e86d7df3883d692356fdd3eea58a0d566e39d
+endif
+
+ifeq ($(ARCH),x86_64)
+  BIN_FILE:=x86_64-v$(PKG_VERSION).tar.xz
+  BIN_HASH:=37948aac57bbc5ef56e62fbde3b23b4f121f9d94854b88efa0c1f575dbb08e55
+endif
+
+# 关键：使用标准 PKG_SOURCE 机制（不要 Download 宏）
+PKG_SOURCE:=x86_64-v3.7.1-1.tar.xz
+PKG_SOURCE_URL:=https://github.com/sbwml/nas-xunlei-binary/releases/download/v3.7.1-1
+PKG_HASH:=37948aac57bbc5ef56e62fbde3b23b4f121f9d94854b88efa0c1f575dbb08e55
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -20,9 +31,7 @@ define Package/$(PKG_NAME)
   CATEGORY:=Network
   SUBMENU:=Web Servers/Proxies
   TITLE:=nas-xunlei
-  # 适配 25.12：移除硬编码的 arch 判断，统一依赖
-  # 使用 libc6-compat 解决 glibc 兼容性问题，而非手动覆盖库文件
-  DEPENDS:=+libc6-compat +libpthread +libgcc +libstdcpp
+  DEPENDS:=@(aarch64||x86_64) +libc +libgcc +libstdcpp
   URL:=https://nas.xunlei.com/
 endef
 
@@ -30,16 +39,18 @@ define Package/$(PKG_NAME)/description
   NAS Thunder download service
 endef
 
-# 二进制包下载逻辑
-define Download/$(PKG_NAME)
-  URL:=https://github.com/sbwml/nas-xunlei-binary/releases/download/v$(PKG_VERSION)-$(PKG_RELEASE)
-  FILE:=nas-xunlei-$(ARCH)-v$(PKG_VERSION).tar.xz
-  HASH:=$(BIN_HASH)
+define Package/$(PKG_NAME)/postrm
+#!/bin/sh
+rm -rf /usr/share/xunlei
+exit 0
 endef
 
+# 解压处理（关键）
 define Build/Prepare
 	$(call Build/Prepare/Default)
-	$(TAR) -xf $(DL_DIR)/nas-xunlei-$(ARCH)-v$(PKG_VERSION).tar.xz -C $(PKG_BUILD_DIR)/
+	rm -rf $(PKG_BUILD_DIR)
+	mkdir -p $(PKG_BUILD_DIR)
+	$(TAR) -xf $(DL_DIR)/$(PKG_SOURCE) -C $(PKG_BUILD_DIR) --strip-components=1
 endef
 
 define Build/Compile
@@ -47,16 +58,14 @@ endef
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/share/xunlei
-	$(CP) $(PKG_BUILD_DIR)/bin $(1)/usr/share/xunlei/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/xunlei $(1)/usr/share/xunlei/xunlei
 
-	# 安装 Web 管理接口
-	$(INSTALL_DIR) $(1)/usr/syno/synoman/webman/modules
-	$(INSTALL_BIN) $(CURDIR)/files/authenticate.cgi $(1)/usr/syno/synoman/webman/modules/authenticate.cgi
+	# 通用写法（最安全）
+	$(CP) $(PKG_BUILD_DIR)/* $(1)/usr/share/xunlei/
 
-	# 统一安装到 /usr/bin，便于系统 PATH 调用
 	$(INSTALL_DIR) $(1)/usr/bin
-	ln -s /usr/share/xunlei/xunlei $(1)/usr/bin/xunlei
+	ln -sf /usr/share/xunlei/xunlei $(1)/usr/bin/xunlei
+endef
+
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
