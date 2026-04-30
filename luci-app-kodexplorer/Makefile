@@ -34,7 +34,7 @@ include $(TOPDIR)/feeds/luci/luci.mk
 define Package/luci-app-kodexplorer
   SECTION:=luci
   CATEGORY:=LuCI
-  SUBMENU:=3. Applications
+  SUBMENU:=Applications
   TITLE:=$(LUCI_TITLE)
   DEPENDS:=$(LUCI_DEPENDS)
   PKGARCH:=$(LUCI_PKGARCH)
