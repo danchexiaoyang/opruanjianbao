@@ -4,49 +4,31 @@ PKG_NAME:=nas-xunlei
 PKG_VERSION:=3.7.1
 PKG_RELEASE:=1
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
-
-# 正确的架构判断（关键修复）
-ifeq ($(CONFIG_TARGET_ARCH),x86_64)
-  BIN_FILE:=x86_64-v$(PKG_VERSION).tar.xz
-  BIN_HASH:=1e3e636eea4c3104877c48f3cd75b578540fdf2a89210f1ebe05f1d6ac3ab45d
-endif
-
-ifeq ($(CONFIG_TARGET_ARCH),aarch64)
-  BIN_FILE:=aarch64-v$(PKG_VERSION).tar.xz
-  BIN_HASH:=285c5b8156f775cf25531aa88e3e86d7df3883d692356fdd3eea58a0d566e39d
-endif
-
-# 防止未匹配架构（关键）
-ifeq ($(BIN_FILE),)
-$(error Unsupported architecture: $(CONFIG_TARGET_ARCH))
-endif
-
-PKG_SOURCE:=$(BIN_FILE)
-PKG_SOURCE_URL:=https://github.com/sbwml/nas-xunlei-binary/releases/download/v$(PKG_VERSION)
-PKG_HASH:=$(BIN_HASH)
+# 必须替换为经过验证的有效 URL 和对应的 SHA256
+# 以下 URL 仅为示例结构，需根据实际情况确认
+PKG_SOURCE:=x86_64-v$(PKG_VERSION).tar.xz
+PKG_SOURCE_URL:=https://github.com/gngpp/nas-xunlei/releases/download/v$(PKG_VERSION)
+PKG_HASH:=skip  # 首次编译时使用 skip，成功后在 dl/ 目录下用 sha256sum 计算并固定
 
 include $(INCLUDE_DIR)/package.mk
 
 define Package/$(PKG_NAME)
   SECTION:=net
   CATEGORY:=Network
-  TITLE:=nas-xunlei
+  TITLE:=NAS Thunder download service
   DEPENDS:=@(x86_64||aarch64) +libc +libgcc +libstdcpp
 endef
 
 define Package/$(PKG_NAME)/description
- NAS Thunder download service
+  NAS Thunder download service, extracted from Synology package.
+  Supports x86_64 and aarch64 architectures.
 endef
 
-define Build/Prepare
-	$(call Build/Prepare/Default)
-	rm -rf $(PKG_BUILD_DIR)
-	mkdir -p $(PKG_BUILD_DIR)
-	$(TAR) -xf $(DL_DIR)/$(PKG_SOURCE) -C $(PKG_BUILD_DIR) --strip-components=1
-endef
+# 移除自定义 Build/Prepare，让默认流程处理下载和解压
+# 如果 tarball 结构特殊，再考虑添加 --strip-components
 
 define Build/Compile
+	# 二进制包，无需编译
 endef
 
 define Package/$(PKG_NAME)/install
@@ -55,6 +37,20 @@ define Package/$(PKG_NAME)/install
 
 	$(INSTALL_DIR) $(1)/usr/bin
 	ln -sf /usr/share/xunlei/xunlei $(1)/usr/bin/xunlei
+
+	# 可选：安装 init 脚本（如果 tarball 中未提供，需自行创建）
+	# $(INSTALL_DIR) $(1)/etc/init.d
+	# $(INSTALL_BIN) ./files/xunlei.init $(1)/etc/init.d/xunlei
 endef
+
+# 可选：在安装后启用服务
+# define Package/$(PKG_NAME)/postinst
+# #!/bin/sh
+# [ -n "$${IPKG_INSTROOT}" ] || {
+#     /etc/init.d/xunlei enable
+#     /etc/init.d/xunlei start
+# }
+# exit 0
+# endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
