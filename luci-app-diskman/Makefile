@@ -3,16 +3,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-diskman
 PKG_VERSION:=0.2.13
-PKG_RELEASE:=1
+PKG_RELEASE:=r1
+
 PKG_MAINTAINER:=lisaac <https://github.com/lisaac/luci-app-diskman>
 PKG_LICENSE:=AGPL-3.0
 
 LUCI_TITLE:=Disk Manager interface for LuCI
 LUCI_DESCRIPTION:=Disk Manager interface for LuCI
 
-# 适配 25.12：
-# 1. 移除了旧版 kmod-fs-ntfs，改为现代的 kmod-fs-ntfs3
-# 2. 保持对基础工具的依赖
 LUCI_DEPENDS:=+luci-compat +luci-lib-ipkg +e2fsprogs +parted +smartmontools +blkid \
 	+kmod-fs-vfat +dosfstools +kmod-fs-msdos +kmod-nls-base +kmod-nls-utf8 \
 	+kmod-nls-cp932 +kmod-nls-cp936 +kmod-nls-cp950 \
