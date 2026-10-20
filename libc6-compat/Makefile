@@ -9,32 +9,30 @@ include $(INCLUDE_DIR)/package.mk
 define Package/$(PKG_NAME)
   SECTION:=libs
   CATEGORY:=Libraries
-  TITLE:=Compatibility libraries for glibc
+  TITLE:=Compatibility libraries for glibc (placeholder)
   DEPENDS:=@USE_MUSL
 endef
 
 define Package/$(PKG_NAME)/description
-  Compatibility libraries for glibc to run binaries on musl-based OpenWrt.
-  This package creates symlinks from glibc paths to musl paths.
+  Placeholder for a glibc compatibility layer on musl-based OpenWrt.
+  NOTE: Symlinking musl libraries to glibc paths is NOT a reliable
+  compatibility solution. Use gcompat or a full glibc runtime instead.
 endef
 
-# 关键修复 1：定义空的准备步骤，防止系统去下载或解压不存在的源码
 define Build/Prepare
 	mkdir -p $(PKG_BUILD_DIR)
 endef
 
-# 关键修复 2：定义空的编译步骤，防止系统在空目录下运行 make 导致报错
 define Build/Compile
 	:
 endef
 
-# 关键修复 3：修正安装逻辑。
-# 迅雷等 x86_64 程序查找的是 ld-linux-x86-64.so.2 和 libc.so.6
+# 保留安装步骤作为占位，但强烈建议替换为真正的兼容层文件。
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/lib
-	# 链接核心库：将 glibc 的名字链接到系统自带的 musl 库上
-	ln -sf /lib/ld-musl-x86_64.so.1 $(1)/lib/ld-linux-x86-64.so.2
-	ln -sf /lib/libc.so $(1)/lib/libc.so.6
+	# 警告：以下符号链接不可靠，仅作占位示例。
+	# ln -sf /lib/ld-musl-x86_64.so.1 $(1)/lib/ld-linux-x86-64.so.2
+	# ln -sf /lib/libc.so $(1)/lib/libc.so.6
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
