@@ -8,7 +8,8 @@ PKG_RELEASE:=1
 # 以下 URL 仅为示例结构，需根据实际情况确认
 PKG_SOURCE:=x86_64-v$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://github.com/gngpp/nas-xunlei/releases/download/v$(PKG_VERSION)
-PKG_HASH:=skip  # 首次编译时使用 skip，成功后在 dl/ 目录下用 sha256sum 计算并固定
+# 首次编译时使用 skip，成功后在 dl/ 目录下用 sha256sum 计算并固定
+PKG_HASH:=skip
 
 include $(INCLUDE_DIR)/package.mk
 
