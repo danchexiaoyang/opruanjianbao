@@ -3,7 +3,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-timedreboot
 PKG_VERSION:=1.0
-PKG_RELEASE:=r4
+PKG_RELEASE:=4
 
 LUCI_TITLE:=LuCI Application to timing reboot
 LUCI_PKGARCH:=all
