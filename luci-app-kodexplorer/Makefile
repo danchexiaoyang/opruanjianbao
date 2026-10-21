@@ -23,7 +23,7 @@ LUCI_DEPENDS:= \
 	+php8-mod-zip
 
 PKG_VERSION:=1
-PKG_RELEASE:=r1
+PKG_RELEASE:=1
 
 include $(TOPDIR)/feeds/luci/luci.mk
 
