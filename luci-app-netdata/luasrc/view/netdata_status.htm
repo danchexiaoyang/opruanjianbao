@@ -1,0 +1,21 @@
+<script type="text/javascript">//<![CDATA[
+	XHR.poll(3, '<%=url([[admin]], [[status]], [[netdata_status]])%>', null,
+		function(x, d) {
+			var tb = document.getElementById('netdata_status');
+			if (d && tb) {
+				if (d.running) {
+					tb.innerHTML = '<em style="color:green"><%:正在运行%></em>';
+				} else {
+					tb.innerHTML = '<em style="color:red"><%:服务未运行%></em>';
+				}
+			}
+		}
+	);
+//]]></script>
+<style>.mar-10 {margin-left: 50px; margin-right: 10px;}</style>
+<fieldset class="cbi-section">
+	<legend><%:NetData状态%></legend>
+	<p id="netdata_status">
+		<em><%:正在收集数据...%></em>
+	</p>
+</fieldset>
