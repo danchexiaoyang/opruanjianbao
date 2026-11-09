@@ -1,36 +1,24 @@
-
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=nas-xunlei
 PKG_VERSION:=3.7.1
 PKG_RELEASE:=1
+PKG_LICENSE:=Proprietary
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
-
-# 获取目标架构
-TARGET_ARCH_RAW:=$(if $(CONFIG_TARGET_ARCH_PACKAGES),$(CONFIG_TARGET_ARCH_PACKAGES),$(ARCH))
-
-# 清理架构变量中的双引号和空格
-TARGET_ARCH:=$(subst ",,$(strip $(TARGET_ARCH_RAW)))
-
-# 根据目标架构选择对应的二进制包
-ifneq ($(filter x86_64,$(TARGET_ARCH)),)
+# 正确的架构判断
+ifeq ($(CONFIG_TARGET_ARCH),x86_64)
   BIN_FILE:=x86_64-v$(PKG_VERSION).tar.xz
   BIN_HASH:=1e3e636eea4c3104877c48f3cd75b578540fdf2a89210f1ebe05f1d6ac3ab45d
+endif
 
-else ifneq ($(filter aarch64 aarch64_generic aarch64_cortex-a53 aarch64_cortex-a72,$(TARGET_ARCH)),)
+ifeq ($(CONFIG_TARGET_ARCH),aarch64)
   BIN_FILE:=aarch64-v$(PKG_VERSION).tar.xz
   BIN_HASH:=285c5b8156f775cf25531aa88e3e86d7df3883d692356fdd3eea58a0d566e39d
+endif
 
-else
-  # Feed 扫描阶段可能没有架构变量
-  ifeq ($(TARGET_ARCH),)
-    BIN_FILE:=x86_64-v$(PKG_VERSION).tar.xz
-    BIN_HASH:=1e3e636eea4c3104877c48f3cd75b578540fdf2a89210f1ebe05f1d6ac3ab45d
-  else
-    $(warning nas-xunlei: TARGET_ARCH_RAW=$(TARGET_ARCH_RAW))
-    $(error Unsupported architecture: $(TARGET_ARCH))
-  endif
+# 防止未匹配架构
+ifeq ($(BIN_FILE),)
+$(error Unsupported architecture: $(CONFIG_TARGET_ARCH))
 endif
 
 PKG_SOURCE:=$(BIN_FILE)
@@ -55,6 +43,8 @@ define Build/Prepare
 	rm -rf $(PKG_BUILD_DIR)
 	mkdir -p $(PKG_BUILD_DIR)
 	$(TAR) -xf $(DL_DIR)/$(PKG_SOURCE) -C $(PKG_BUILD_DIR) --strip-components=1
+	@test -f $(PKG_BUILD_DIR)/xunlei || \
+		(echo "ERROR: xunlei binary missing after extract" && exit 1)
 endef
 
 define Build/Compile
@@ -62,7 +52,9 @@ endef
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/share/xunlei
-	$(CP) $(PKG_BUILD_DIR)/* $(1)/usr/share/xunlei/
+	cd $(PKG_BUILD_DIR) && \
+	find . -mindepth 1 -maxdepth 1 ! -name 'ipkg-*' \
+		-exec cp -fpR {} $(1)/usr/share/xunlei/ \;
 
 	$(INSTALL_DIR) $(1)/usr/bin
 	ln -sf /usr/share/xunlei/xunlei $(1)/usr/bin/xunlei
