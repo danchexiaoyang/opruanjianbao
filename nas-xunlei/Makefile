@@ -16,7 +16,7 @@ ifeq ($(ARCH),aarch64)
 endif
 
 ifeq ($(ARCH),x86_64)
-	BIN_HASH:=37948aac57bbc5ef56e62fbde3b23b4f121f9d94854b88efa0c1f575dbb08e55
+	BIN_HASH:=1e3e636eea4c3104877c48f3cd75b578540fdf2a89210f1ebe05f1d6ac3ab45d
 endif
 
 PKG_MAINTAINER:=sbwml <admin@cooluc.com>
