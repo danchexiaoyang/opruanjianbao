@@ -15,6 +15,11 @@ LUCI_TITLE:=LuCI support for Netdata
 LUCI_DEPENDS:=+netdata
 LUCI_PKGARCH:=all
 
+define Package/luci-app-kodexplorer/install	
+	$(INSTALL_DIR) $(1)/etc/uci-defaults
+	$(INSTALL_BIN) ./root/etc/uci-defaults/luci-kodexplorer $(1)/etc/uci-defaults/40_luci-app-netdata
+endef
+
 include $(TOPDIR)/feeds/luci/luci.mk
 
 # call BuildPackage - OpenWrt buildroot signature
