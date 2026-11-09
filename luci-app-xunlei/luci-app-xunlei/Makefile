@@ -11,8 +11,6 @@ LUCI_PKGARCH:=all
 LUCI_DEPENDS:=+nas-xunlei
 PKG_MAINTAINER:=sbwml <admin@cooluc.com>
 
-include $(TOPDIR)/feeds/luci/luci.mk
-
 define Package/$(PKG_NAME)/conffiles
 /etc/xunlei
 /etc/synoinfo.conf
@@ -37,3 +35,5 @@ exit 0
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
+
+include $(TOPDIR)/feeds/luci/luci.mk
