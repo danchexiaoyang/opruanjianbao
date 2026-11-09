@@ -1,4 +1,3 @@
-
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=nas-xunlei
@@ -7,19 +6,20 @@ PKG_RELEASE:=1
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
-# 获取目标架构
-TARGET_ARCH:=$(CONFIG_TARGET_ARCH_PACKAGES)
-
-ifeq ($(TARGET_ARCH),x86_64)
+# 正确的架构判断（关键修复）
+ifeq ($(CONFIG_TARGET_ARCH),x86_64)
   BIN_FILE:=x86_64-v$(PKG_VERSION).tar.xz
   BIN_HASH:=1e3e636eea4c3104877c48f3cd75b578540fdf2a89210f1ebe05f1d6ac3ab45d
-else ifneq ($(filter aarch64%,$(TARGET_ARCH)),)
+endif
+
+ifeq ($(CONFIG_TARGET_ARCH),aarch64)
   BIN_FILE:=aarch64-v$(PKG_VERSION).tar.xz
   BIN_HASH:=285c5b8156f775cf25531aa88e3e86d7df3883d692356fdd3eea58a0d566e39d
-else
-  ifneq ($(strip $(TARGET_ARCH)),)
-    $(error Unsupported architecture: $(TARGET_ARCH))
-  endif
+endif
+
+# 防止未匹配架构（关键）
+ifeq ($(BIN_FILE),)
+$(error Unsupported architecture: $(CONFIG_TARGET_ARCH))
 endif
 
 PKG_SOURCE:=$(BIN_FILE)
