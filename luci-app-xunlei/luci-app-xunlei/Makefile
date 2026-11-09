@@ -1,4 +1,3 @@
-# Copyright (C) 2016 Openwrt.org
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-xunlei
@@ -7,7 +6,6 @@ PKG_RELEASE:=2
 
 LUCI_TITLE:=LuCI support for NAS-Xunlei
 LUCI_PKGARCH:=all
-# 适配 25.12：确保依赖名称与之前定义的 nas-xunlei 一致
 LUCI_DEPENDS:=+nas-xunlei
 PKG_MAINTAINER:=sbwml <admin@cooluc.com>
 
@@ -16,8 +14,6 @@ define Package/$(PKG_NAME)/conffiles
 /etc/synoinfo.conf
 endef
 
-# 25.12 中，postinst/postrm 脚本应尽可能精简，
-# 因为 apk 拥有更强的自动触发机制。
 define Package/$(PKG_NAME)/postinst
 #!/bin/sh
 if [ -z "$${IPKG_INSTROOT}" ]; then
@@ -34,6 +30,14 @@ rm -rf /var/packages/pan-xunlei-com
 exit 0
 endef
 
-$(eval $(call BuildPackage,$(PKG_NAME)))
+define Package/luci-app-xunlei/install
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) ./root/etc/init.d/xunlei $(1)/etc/init.d/xunlei
+
+	$(INSTALL_DIR) $(1)/etc/uci-defaults
+	$(INSTALL_BIN) ./root/etc/uci-defaults/luci-xunlei $(1)/etc/uci-defaults/luci-xunlei
+endef
 
 include $(TOPDIR)/feeds/luci/luci.mk
+
+$(eval $(call BuildPackage,$(PKG_NAME)))

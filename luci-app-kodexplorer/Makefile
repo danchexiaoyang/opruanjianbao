@@ -1,5 +1,6 @@
 include $(TOPDIR)/rules.mk
 
+PKG_NAME:=luci-app-kodexplorer
 LUCI_TITLE:=LuCI support for KodExplorer
 LUCI_PKGARCH:=all
 
@@ -24,6 +25,14 @@ LUCI_DEPENDS:= \
 
 PKG_VERSION:=1
 PKG_RELEASE:=1
+
+define Package/luci-app-kodexplorer/install
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) ./root/etc/init.d/kodexplorer $(1)/etc/init.d/kodexplorer
+
+	$(INSTALL_DIR) $(1)/etc/uci-defaults
+	$(INSTALL_BIN) ./root/etc/uci-defaults/luci-kodexplorer $(1)/etc/uci-defaults/luci-kodexplorer
+endef
 
 include $(TOPDIR)/feeds/luci/luci.mk
 
