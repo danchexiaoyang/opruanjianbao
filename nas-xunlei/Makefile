@@ -17,7 +17,6 @@ else ifneq ($(filter aarch64%,$(TARGET_ARCH)),)
   BIN_FILE:=aarch64-v$(PKG_VERSION).tar.xz
   BIN_HASH:=285c5b8156f775cf25531aa88e3e86d7df3883d692356fdd3eea58a0d566e39d
 else
-  # Feed 扫描阶段架构变量可能为空，使用非空占位文件名
   ifeq ($(TARGET_ARCH),)
     BIN_FILE:=x86_64-v$(PKG_VERSION).tar.xz
     BIN_HASH:=1e3e636eea4c3104877c48f3cd75b578540fdf2a89210f1ebe05f1d6ac3ab45d
